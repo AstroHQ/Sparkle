@@ -44,9 +44,8 @@
 
 - (void)windowDidLoad
 {
-    if ([self.host isBackgroundApplication]) {
-        [[self window] setLevel:NSFloatingWindowLevel];
-    }
+    // MJR: Modification for AstroPad
+    [[self window] setLevel:NSStatusWindowLevel + 2];
 
     [[self window] center];
     [[self window] setFrameAutosaveName:@"SUStatusFrame"];
