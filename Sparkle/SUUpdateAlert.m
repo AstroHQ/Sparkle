@@ -177,9 +177,8 @@
 
     [self.window setFrameAutosaveName: showReleaseNotes ? @"SUUpdateAlert" : @"SUUpdateAlertSmall" ];
 
-    if ([self.host isBackgroundApplication]) {
-        [self.window setLevel:NSFloatingWindowLevel]; // This means the window will float over all other apps, if our app is switched out ?!
-    }
+    // MJR: Modification for AstroPad
+    [self.window setLevel:NSStatusWindowLevel + 2];
 
     if ([self.updateItem fileURL] == nil) {
         [self.installButton setTitle:SULocalizedString(@"Learn More...", @"Alternate title for 'Install Update' button when there's no download in RSS feed.")];
