@@ -16,6 +16,7 @@
 #import <WebKit/WebKit.h>
 
 #import "SUConstants.h"
+#import "SULog.h"
 
 // WebKit protocols are not explicitly declared until 10.11 SDK, so
 // declare dummy protocols to keep the build working on earlier SDKs.
@@ -121,11 +122,13 @@
     self.releaseNotesView.preferencesIdentifier = SUBundleIdentifier;
     WebPreferences *prefs = [self.releaseNotesView preferences];
     prefs.plugInsEnabled = NO;
+    prefs.javaEnabled = NO;
+    prefs.javaScriptEnabled = [self.host boolForInfoDictionaryKey:SUEnableJavaScriptKey];
     self.releaseNotesView.frameLoadDelegate = self;
     self.releaseNotesView.policyDelegate = self;
     
     // Set the default font
-    // "-apple-system-font" is a reference to the system UI font on OS X. "-apple-system" is the new recommended token, but for backward compatibility we can't use it.
+    // "-apple-system-font" is a reference to the system UI font. "-apple-system" is the new recommended token, but for backward compatibility we can't use it.
     prefs.standardFontFamily = @"-apple-system-font";
     prefs.defaultFontSize = (int)[NSFont systemFontSize];
 
@@ -256,10 +259,11 @@
 {
     NSURL *requestURL = request.URL;
     NSString *scheme = requestURL.scheme;
-    BOOL whitelistedSafe = [@"http" isEqualToString:scheme] || [@"https" isEqualToString:scheme] || [@"about:blank" isEqualToString:requestURL.absoluteString];
+    BOOL whitelistedSafe = [scheme isEqualToString:@"http"] || [scheme isEqualToString:@"https"] || [requestURL.absoluteString isEqualToString:@"about:blank"];
 
     // Do not allow redirects to dangerous protocols such as file://
     if (!whitelistedSafe) {
+        SULog(@"Blocked display of %@ URL which may be dangerous", scheme);
         [listener ignore];
         return;
     }
